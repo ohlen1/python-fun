@@ -9,9 +9,9 @@ def json_to_xml():
         return bad_request()
     pretty = request.args.get('pretty')
     request_json = request.get_json(request.data)
+    app.logger.debug('json to transform: \n%s',json.dumps(request_json, indent=2))
     xml = transform_json_to_xml(request_json,pretty)
-    print('full xml')
-    print(xml)
+    app.logger.debug('transformed xml:\n%s', xml)
     resp = Flask.make_response(app,xml)
     resp.headers['Content-type'] = 'application/xml'
     return resp
@@ -29,7 +29,6 @@ def bad_request():
     return 'Bad request', 400
 
 def transform_json_to_xml(my_json,pretty):
-    print('full json: \n'+json.dumps(my_json, indent=2))
     my_xml = '<root>'
     my_xml += transform_dict_to_xml(my_json,1,pretty)
     my_xml += ''.join(('\r\n</root>'))
@@ -44,7 +43,6 @@ def transform_dict_to_xml(my_json,level,pretty):
                 for x in range(0,level):
                     my_xml += ' '
             my_xml += ''.join(('<',k,'>',v,'</',k,'>'))
-            print('')
         else:
             if pretty:
                 my_xml += '\r\n '
